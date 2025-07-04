@@ -4,8 +4,9 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-
+const cors=require('cors');
 const app = express();
+app.use(cors());
 const PORT = 3000;
 const OUTPUT_DIR = path.join(__dirname, 'uploads');
 

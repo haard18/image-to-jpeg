@@ -33,7 +33,9 @@ function fillSvgPlaceholders(svgContent, replacements) {
     }
   });
 }
-
+app.get('/', (req, res) => {
+  res.send('Welcome to the SVG to JPEG conversion service!');
+});
 // Endpoint
 app.post('/svg-to-jpeg', async (req, res) => {
   try {
@@ -62,7 +64,7 @@ app.post('/svg-to-jpeg', async (req, res) => {
       .jpeg({ quality: 90 })
       .toFile(filepath);
 
-    const fileUrl = `http://192.168.29.110:${PORT}/uploads/${filename}`;
+    const fileUrl = `https://image-to-jpeg-vl1x.onrender.com/uploads/${filename}`;
     res.json({ url: fileUrl });
 
   } catch (err) {

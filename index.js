@@ -11,9 +11,9 @@ const OUTPUT_DIR = path.join(__dirname, 'uploads');
 
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR);
 
-// Load SVG template once
-const svgPath = path.join(__dirname, 'pawn.svg');
-const rawSvgTemplate = fs.readFileSync(svgPath, 'utf8');
+// // Load SVG template once
+// const svgPath = path.join(__dirname, `svgs/Pawn${platform}.svg`);
+// const rawSvgTemplate = fs.readFileSync(svgPath, 'utf8');
 
 // Parse JSON body
 app.use(express.json());
@@ -39,11 +39,19 @@ app.post('/svg-to-jpeg', async (req, res) => {
     console.log('Received request to /svg-to-jpeg');
     console.log('Request body:', req.body);
 
-    const replacements = req.body;
-    if (!replacements || typeof replacements !== 'object') {
-      return res.status(400).json({ error: 'Missing or invalid replacement object' });
+    const { platform, ...replacements } = req.body;
+
+    if (!platform || typeof replacements !== 'object') {
+      return res.status(400).json({ error: 'Missing platform or invalid replacement object' });
     }
 
+    const svgPath = path.join(__dirname, `svgs/Pawn${platform}.svg`);
+
+    if (!fs.existsSync(svgPath)) {
+      return res.status(404).json({ error: `SVG template not found for platform: ${platform}` });
+    }
+
+    const rawSvgTemplate = fs.readFileSync(svgPath, 'utf8');
     const filledSvg = fillSvgPlaceholders(rawSvgTemplate, replacements);
 
     const filename = `${uuidv4()}.jpeg`;
@@ -53,7 +61,7 @@ app.post('/svg-to-jpeg', async (req, res) => {
       .jpeg({ quality: 90 })
       .toFile(filepath);
 
-    const fileUrl = `http://localhost:${PORT}/uploads/${filename}`;
+    const fileUrl = `http://192.168.29.110:${PORT}/uploads/${filename}`;
     res.json({ url: fileUrl });
 
   } catch (err) {

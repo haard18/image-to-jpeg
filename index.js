@@ -35,6 +35,15 @@ function fillSvgPlaceholders(svgContent, replacements) {
     }
   });
 }
+function clearUploadsFolder() {
+  fs.readdirSync(OUTPUT_DIR).forEach(file => {
+    const filePath = path.join(OUTPUT_DIR, file);
+    if (fs.statSync(filePath).isFile()) {
+      fs.unlinkSync(filePath);
+    }
+  });
+}
+
 app.get("/", (req, res) => {
   res.send("Welcome to the SVG to JPEG conversion service!");
 });
@@ -49,7 +58,8 @@ app.post("/svg-to-jpeg", async (req, res) => {
     if (!replacements || typeof replacements !== "object") {
       return res.status(400).json({ error: "Invalid replacement object" });
     }
-
+    clearUploadsFolder();
+    
     const platforms = [
       "Facebook",
       "Instagram",
